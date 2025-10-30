@@ -1,0 +1,13 @@
+{
+  "name": "Django Dev",
+  "image": "mcr.microsoft.com/devcontainers/python:3.11",
+  "postCreateCommand": "pip install -r requirements.txt || pip install django",
+  "forwardPorts": [8000],
+  "portsAttributes": {
+    "8000": {
+      "label": "Django Server",
+      "onAutoForward": "openBrowser"
+    }
+  },
+  "remoteUser": "vscode"
+}
