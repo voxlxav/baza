@@ -1,15 +1,30 @@
+{% load static %}
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pl">
 <head>
-    <meta charset="UTF-8">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Logowanie</title>
+    <link href="https://fonts.googleapis.com/css?family=Roboto+Mono&display=swap" rel="stylesheet"/>
+    <link href="{% static 'main.css' %}" rel="stylesheet"/>
 </head>
 <body>
-<h2>Log In</h2>
-<form method="post">
-  {% csrf_token %}
-  {{ form }}
-  <button type="submit">Log In</button>
-</form>
+    <div class="login-container">
+        <div class="login-box">
+            <h1>Hejka!</h1>
+            <p>Wprowadź swoje dane logowania do bazy:</p>
+            <form method="post">
+                {% csrf_token %}
+                {% if form.errors %}
+                    <div style="color: red; margin-bottom: 15px;">
+                        {{ form.errors }}
+                    </div>
+                {% endif %}
+                <input type="text" name="username" placeholder="nazwa użytkownika" required>
+                <input type="password" name="password" placeholder="hasło" required>
+                <button type="submit">Zaloguj się</button>
+            </form>
+        </div>
+    </div>
 </body>
 </html>

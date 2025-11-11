@@ -1,0 +1,92 @@
+/* Ogólne style */
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Roboto Mono', monospace;
+    background-color: #ededed;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+/* Kontener */
+.login-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+}
+
+/* Kwadrat logowania — zmniejszony i elegancki */
+.login-box {
+    background-color: #f8f8f8;
+    border: 1px solid #000;
+    border-radius: 30px;
+    padding: 40px 50px;
+    width: 400px;
+    max-width: 90%;
+    text-align: center;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+}
+
+/* Teksty */
+.login-box h1 {
+    font-size: 36px;
+    margin-bottom: 10px;
+}
+
+.login-box p {
+    font-size: 18px;
+    color: #333;
+    margin-bottom: 30px;
+}
+
+/* Pola tekstowe */
+.login-box input {
+    width: 100%;
+    padding: 15px;
+    margin-bottom: 20px;
+    font-size: 16px;
+    border: 1px solid #aaa;
+    border-radius: 25px;
+    background-color: #d9d9d9;
+    text-align: center;
+}
+
+/* Przycisk */
+.login-box button {
+    width: 100%;
+    padding: 15px;
+    background-color: #003aa6;
+    color: white;
+    border: none;
+    border-radius: 25px;
+    font-size: 18px;
+    cursor: pointer;
+    transition: background 0.3s ease;
+}
+
+.login-box button:hover {
+    background-color: #002b80;
+}
+
+/* Responsywność */
+@media (max-width: 600px) {
+    .login-box {
+        width: 90%;
+        padding: 30px 20px;
+    }
+
+    .login-box h1 {
+        font-size: 28px;
+    }
+
+    .login-box p {
+        font-size: 16px;
+    }
+}
