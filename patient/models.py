@@ -62,3 +62,34 @@ class TherapyCycle(models.Model):
   def __str__(self):
     return f'{self.patient.first_name} {self.patient.last_name} - {self.protocol_name} - {self.status}'
 
+
+class Response(models.Model):
+  class RECIST_criteria(models.TextChoices):
+    CR = "CR", "CR - complete response"
+    PR = "PR", "PR - partial response"
+    SD = "SD", "SD - stable disease"
+    PD = "PD", "PD - progressive disease"
+
+  cycle_id = models.ForeignKey(
+    TherapyCycle,
+    on_delete=models.CASCADE,
+    related_name='response',
+    verbose_name="Terapia"
+  )
+  assessment_date = models.DateField(verbose_name='Data oceny reakcji')
+
+  recist_result = models.CharField(
+    choices=RECIST_criteria.choices,
+    default=RECIST_criteria.SD,
+    verbose_name='Kryterium RECIST'
+  )
+
+  notes = models.TextField(
+    max_length=1000,
+    null=True,
+    blank=True,
+    verbose_name='Notatki'
+  )
+
+  def __str__(self):
+    return f'{self.cycle_id} - {self.assessment_date}'
