@@ -70,10 +70,11 @@ class Response(models.Model):
     SD = "SD", "SD - stable disease"
     PD = "PD", "PD - progressive disease"
 
-  cycle_id = models.ForeignKey(
+  response_cycle_id = models.ForeignKey(
     TherapyCycle,
     on_delete=models.CASCADE,
-    related_name='response',
+    null=True,
+    related_name='response_ci',
     verbose_name="Terapia"
   )
   assessment_date = models.DateField(verbose_name='Data oceny reakcji')
@@ -93,3 +94,38 @@ class Response(models.Model):
 
   def __str__(self):
     return f'{self.cycle_id} - {self.assessment_date}'
+
+class AdverseEvent(models.Model):
+  class severity_grades(models.TextChoices):
+    g1 = "Grade 1"
+    g2 = "Grade 2"
+    g3 = "Grade 3"
+    g4 = "Grade 4"
+    g5 = "Grade 5"
+
+  adverse_event_cycle_id = models.ForeignKey(
+    TherapyCycle,
+    on_delete=models.CASCADE,
+    related_name='adverse_event_response',
+    null=True,
+    verbose_name="Terapia"
+  )
+
+  event_date = models.DateField(verbose_name='Data zdarzenia')
+  description = models.TextField(
+    max_length=1500,
+    verbose_name= "Opis zdarzenia"
+  )
+
+  severity = models.CharField(
+    choices=severity_grades.choices,
+    default=severity_grades.g1,
+    verbose_name= "Severity"
+  )
+
+  action_taken = models.TextField(
+    max_length=1500,
+    verbose_name= "Podjęte działanie"
+  )
+  def __str__(self):
+    return f'{self.cycle_id} - {self.event_date}'
