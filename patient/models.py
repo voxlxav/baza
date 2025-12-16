@@ -129,3 +129,44 @@ class AdverseEvent(models.Model):
   )
   def __str__(self):
     return f'{self.cycle_id} - {self.event_date}'
+
+class Mutation(models.Model):
+  class MutationTypeChoices(models.TextChoices):
+    MISSENSE = 'MISSENSE',
+    NONSENSE = 'NONSENSE',
+    FRAMESHIFT = 'FRAMESHIFT',
+    SILENT = 'SILENT',
+    SPLICE_SITE = 'SPLICE_SITE',
+    INDEL = 'INDEL',
+    OTHER = 'OTHER',
+
+  mutation_patient_id = models.ForeignKey(
+    Patient,
+    on_delete=models.CASCADE,
+    related_name='patient_mutations',
+    verbose_name="ID_Pacjenta"
+  )
+
+  gene = models.CharField(
+        max_length=15,
+        verbose_name='ENSEMBL Gene ID',
+        help_text='The 15-character ENSEMBL stable ID (e.g., ENSG00000139618)',
+  )
+
+  chromosome_location = models.CharField(
+      max_length=100,
+      help_text="Format: chr:start-end (e.g., chr17:41196312-41277500)",
+      verbose_name="Lokalizacja w genomie"
+  ),
+
+  mutation_type = models.CharField(
+        max_length=20,
+        choices=MutationTypeChoices.choices,
+        default=MutationTypeChoices.OTHER,)
+
+  vaf = models.FloatField(
+    verbose_name="VAF"
+  )
+
+  def __str__(self):
+    return self.mutation_patient_id + ' ' + self.chromosome_location
