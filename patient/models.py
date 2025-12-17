@@ -40,7 +40,8 @@ class TherapyCycle(models.Model):
     HORMON = 'Terapia hormonalna'
     IMMUNO = 'Immunoterapia'
     PHOTO = 'Terapia fotodynamiczna'
-    TARGET = 'Terapia celowana'
+    TARGET = 'Terapia celowana',
+    RADIO = 'Radioterapia'
 
   protocol_name = models.CharField(
     max_length=200,
