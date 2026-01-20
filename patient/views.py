@@ -1,5 +1,8 @@
 from django.shortcuts import render, redirect
 
+from patient.models import Patient
+
+
 # Create your views here.
 def home(request):
   if request.user.is_authenticated:

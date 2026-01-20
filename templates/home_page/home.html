@@ -1,29 +1,112 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pl">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Panel użytkownika</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'stylesheets/home.css' %}">
+    <link rel="icon" type="image/png" href="{% static 'images/favicon.png' %}">
 </head>
+
 <body>
-<h1>Witaj, {{ user.first_name|default:user.username }}! 👋</h1>
 
-<h2>Twoje Dane Konta:</h2>
-<ul>
-    <li>Nazwa Użytkownika: <strong>{{ user.username }}</strong></li>
-</ul>
-{% if user.is_superuser %}
-    <div style="border: 1px solid red; padding: 10px;">
-        Jesteś Administratorem. Masz dostęp do specjalnych funkcji.
-        <a href="/admin/">Panel Admina</a>
+<div class="dashboard-layout">
+
+    <!-- SIDEBAR -->
+    <aside class="dashboard-sidebar">
+        <div class="sidebar-brand">
+            Panel
+        </div>
+
+        <nav class="sidebar-nav">
+            <div class="nav-item">Menu 1</div>
+            <div class="nav-item">Menu 2</div>
+            <div class="nav-item">Menu 3</div>
+        </nav>
+    </aside>
+
+    <!-- MAIN -->
+    <div class="dashboard-main">
+
+        <!-- HEADER -->
+        <header class="dashboard-header">
+            <div class="user-greeting">
+                Siema <span>{{ user.username }}</span>
+            </div>
+            {% if user.is_authenticated %}
+                <form method="post" action="{% url 'logout' %}">
+                    {% csrf_token %}
+                    <button type="submit" class="logout-button">Wyloguj</button>
+            </form>
+            {% endif %}
+        </header>
+
+        <!-- CONTENT -->
+        <div class="dashboard-content">
+
+            {% if user.is_superuser %}
+            <!-- ADMIN VIEW -->
+            <div class="admin-view animate-fade-in">
+                <div class="admin-hero">
+                    <h2>Panel administratora</h2>
+                    <p>Możesz przejść do panelu administracyjnego Django.</p>
+
+                    <a href="/admin/">
+                        <button class="mega-button">Przejdź do panelu administratora</button>
+                    </a>
+                </div>
+            </div>
+
+            {% else %}
+            <!-- DOCTOR VIEW -->
+            <div class="doctor-view animate-fade-in">
+
+                <div class="view-header">
+                    <div>
+                        <h2>Twoi pacjenci</h2>
+                        <p>Lista pacjentów przypisanych do Ciebie</p>
+                    </div>
+
+                    <a href="">
+                        <button class="add-button">Dodaj pacjenta</button>
+                    </a>
+                </div>
+
+                <div class="table-container">
+                    <table class="patient-table">
+                        <thead>
+                            <tr>
+                                <th>Imię</th>
+                                <th>Nazwisko</th>
+                                <th>PESEL</th>
+                                <th>Data wizyty</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for p in patients %}
+                            <tr>
+                                <td>{{ p.first_name }}</td>
+                                <td>{{ p.last_name }}</td>
+                                <td class="mono">{{ p.pesel }}</td>
+                                <td>{{ p.visit_date }}</td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="4">Brak pacjentów</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+
+            </div>
+            {% endif %}
+
+        </div>
     </div>
-{% endif %}
 
-{% if user.is_authenticated %}
-    <form method="post" action="{% url 'logout' %}">
-        {% csrf_token %}
-        <button type="submit">Wyloguj</button>
-    </form>
+</div>
 
-    {% endif %}
 </body>
 </html>
