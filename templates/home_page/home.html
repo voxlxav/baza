@@ -32,7 +32,7 @@
         <!-- HEADER -->
         <header class="dashboard-header">
             <div class="user-greeting">
-                Siema <span>{{ user.username }}</span>
+                Witaj <span>{{ user.first_name }} {{ user.last_name }}</span>
             </div>
             {% if user.is_authenticated %}
                 <form method="post" action="{% url 'logout' %}">
@@ -84,7 +84,7 @@
                             </tr>
                         </thead>
                         <tbody>
-                            {% for p in patient %}
+                            {% for p in patients %}
                             <tr>
                                 <td>{{ p.first_name }}</td>
                                 <td>{{ p.last_name }}</td>

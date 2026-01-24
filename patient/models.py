@@ -1,4 +1,5 @@
 from django.db import models
+from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 from django.core.validators import RegexValidator
 
@@ -22,6 +23,15 @@ class Doctor(models.Model):
     PATHOMORPHOLOGIST = 'PATOMORFOLOG', 'Patomorfolog'
     SURGEON = 'CHIRURG', 'Chirurg onkologiczny'
     OTHER = 'INNY', 'Inna specjalizacja'
+
+  user = models.OneToOneField(
+    User,
+    on_delete=models.CASCADE,
+    related_name='doctor_profile',
+    null=True,
+    blank=True,
+    verbose_name='Konto użytkownika'
+  )
 
   first_name = models.CharField(max_length=100,verbose_name='Imię')
   last_name = models.CharField(max_length=100,verbose_name='Nazwisko')
