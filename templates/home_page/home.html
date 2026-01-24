@@ -79,16 +79,16 @@
                             <tr>
                                 <th>Imię</th>
                                 <th>Nazwisko</th>
-                                <th>PESEL</th>
+                                <th>Płeć</th>
                                 <th>Data wizyty</th>
                             </tr>
                         </thead>
                         <tbody>
-                            {% for p in patients %}
+                            {% for p in patient %}
                             <tr>
                                 <td>{{ p.first_name }}</td>
                                 <td>{{ p.last_name }}</td>
-                                <td class="mono">{{ p.pesel }}</td>
+                                <td class="mono">{{ p.gender }}</td>
                                 <td>{{ p.visit_date }}</td>
                             </tr>
                             {% empty %}
