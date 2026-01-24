@@ -1,4 +1,3 @@
-
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Roboto+Mono&display=swap');
 
@@ -19,11 +18,7 @@ html, body {
     background-color: var(--app-bg);
     color: var(--text-primary);
     font-family: var(--font-sans);
-    overflow: hidden;
-}
-
-#root {
-    height: 100vh;
+    /* Usunięto overflow: hidden dla body, aby umożliwić naturalne przewijanie, jeśli potrzebne */
 }
 
 /* DASHBOARD LAYOUT */
@@ -86,48 +81,6 @@ html, body {
     background: var(--accent-color);
 }
 
-.role-switcher {
-    margin-top: auto;
-    padding-top: 24px;
-    border-top: 1px solid var(--border-color);
-}
-
-.role-switcher p {
-    font-size: 0.7rem;
-    color: var(--text-secondary);
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    margin-bottom: 12px;
-    font-weight: 700;
-}
-
-.switch-buttons {
-    display: flex;
-    background: #ffffff;
-    padding: 4px;
-    border-radius: 8px;
-    gap: 4px;
-    border: 1px solid var(--border-color);
-}
-
-.switch-buttons button {
-    flex: 1;
-    background: transparent;
-    border: none;
-    color: var(--text-secondary);
-    padding: 6px;
-    border-radius: 6px;
-    font-size: 0.8rem;
-    cursor: pointer;
-    transition: all 0.2s;
-    font-weight: 600;
-}
-
-.switch-buttons button.active {
-    background: var(--accent-color);
-    color: white;
-}
-
 /* MAIN CONTENT AREA */
 .dashboard-main {
     flex: 1;
@@ -135,7 +88,7 @@ html, body {
     flex-direction: column;
     z-index: 10;
     position: relative;
-    overflow-y: auto;
+    overflow-y: auto; /* Przewijanie tylko głównej treści */
 }
 
 /* HEADER */
@@ -189,7 +142,7 @@ html, body {
     box-sizing: border-box;
 }
 
-/* DOCTOR VIEW */
+/* DOCTOR VIEW HEADER & BUTTONS */
 .view-header {
     display: flex;
     justify-content: space-between;
@@ -218,11 +171,72 @@ html, body {
     font-weight: 600;
     cursor: pointer;
     transition: all 0.2s;
+    text-decoration: none; /* Ważne, bo to link a nie button */
+    display: inline-block;
 }
 
 .add-button:hover {
     opacity: 0.9;
     transform: translateY(-1px);
+}
+
+/* --- WYSZUKIWARKA (SEARCH) --- */
+/* Ważne: Te style muszą być POZA sekcją @media */
+
+.search-toolbar {
+    margin-bottom: 20px;
+}
+
+.search-toolbar form {
+    display: flex;
+    gap: 10px;
+    max-width: 500px;
+}
+
+.search-input {
+    flex: 1;
+    padding: 10px 16px;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    font-family: var(--font-sans);
+    font-size: 0.9rem;
+    outline: none;
+    transition: border-color 0.2s;
+}
+
+.search-input:focus {
+    border-color: var(--accent-color);
+    box-shadow: 0 0 0 3px rgba(0, 58, 167, 0.1);
+}
+
+.search-button {
+    padding: 10px 20px;
+    background-color: #ffffff;
+    border: 1px solid var(--border-color);
+    color: var(--text-secondary);
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.2s;
+}
+
+.search-button:hover {
+    background-color: #f3f4f6;
+    color: var(--text-primary);
+}
+
+.clear-search {
+    display: flex;
+    align-items: center;
+    padding: 0 12px;
+    color: #ef4444;
+    font-size: 0.9rem;
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.clear-search:hover {
+    text-decoration: underline;
 }
 
 /* TABLE */
@@ -275,25 +289,47 @@ html, body {
 .patient-table td a,
 .patient-table td a:visited {
     text-decoration: none;
-    color: var(--text-secondary);
+    color: var(--text-primary); /* Poprawiony kolor linku */
     font-weight: 600;
     transition: color 0.2s ease;
     display: inline-block;
 }
 
-/* Efekt najechania myszką (pozostaje bez zmian) */
 .patient-table td a:hover {
     color: var(--accent-color);
     text-decoration: underline;
 }
 
-.text-action {
-    background: transparent;
-    border: none;
+/* --- PAGINACJA --- */
+.pagination-container {
+    margin-top: 24px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    padding-bottom: 20px; /* Odstęp od dołu */
+}
+
+.step-links a {
+    text-decoration: none;
+    color: var(--text-primary);
+    padding: 8px 12px;
+    margin: 0 4px;
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    background: white;
+    transition: all 0.2s;
+}
+
+.step-links a:hover {
+    border-color: var(--accent-color);
     color: var(--accent-color);
-    font-weight: 700;
-    cursor: pointer;
-    font-size: 0.85rem;
+}
+
+.step-links .current {
+    margin: 0 12px;
+    font-weight: 600;
 }
 
 /* ADMIN VIEW */
@@ -356,7 +392,10 @@ html, body {
     to { opacity: 1; transform: translateY(0); }
 }
 
-/* MOBILE RESPONSIVE */
+/* ========================================= */
+/* MOBILE RESPONSIVE (MEDIA QUERIES)         */
+/* To MUSI być na samym dole pliku!          */
+/* ========================================= */
 @media (max-width: 768px) {
     .dashboard-layout {
         flex-direction: column;
@@ -373,6 +412,22 @@ html, body {
     .nav-item { padding: 8px 12px; font-size: 0.8rem; }
     .dashboard-header { height: 60px; padding: 0 16px; }
     .dashboard-content { padding: 20px; }
-    .view-header { flex-direction: column; align-items: flex-start; gap: 16px; }
-    .patient-table th:nth-child(3), .patient-table td:nth-child(3) { display: none; }
+
+    .view-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 16px;
+    }
+
+    /* Ukrywanie mniej ważnych kolumn na małym ekranie */
+    .patient-table th:nth-child(2), .patient-table td:nth-child(2), /* Data ur */
+    .patient-table th:nth-child(3), .patient-table td:nth-child(3)  /* Płeć */
+    {
+        display: none;
+    }
+
+    .search-toolbar form {
+        flex-direction: column;
+        max-width: 100%;
+    }
 }

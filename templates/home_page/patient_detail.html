@@ -1,8 +1,11 @@
+
 <!DOCTYPE html>
 <html lang="pl">
 <head>
     <meta charset="UTF-8">
     <title>Karta Pacjenta</title>
+    {%load static%}
+    <link rel="icon" type="image/png" href="{% static 'images/favicon.png' %}">
 </head>
 <body>
     <h1>Karta Pacjenta: {{ patient.first_name }} {{ patient.last_name }}</h1>

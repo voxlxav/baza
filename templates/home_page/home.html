@@ -8,109 +8,117 @@
     <link rel="stylesheet" href="{% static 'stylesheets/home.css' %}">
     <link rel="icon" type="image/png" href="{% static 'images/favicon.png' %}">
 </head>
-
 <body>
-
-<div class="dashboard-layout">
-
-    <!-- SIDEBAR -->
-    <aside class="dashboard-sidebar">
-        <div class="sidebar-brand">
-            Panel
-        </div>
-
-        <nav class="sidebar-nav">
-            <div class="nav-item">Menu 1</div>
-            <div class="nav-item">Menu 2</div>
-            <div class="nav-item">Menu 3</div>
-        </nav>
-    </aside>
-
-    <!-- MAIN -->
-    <div class="dashboard-main">
-
-        <!-- HEADER -->
-        <header class="dashboard-header">
-            <div class="user-greeting">
-                Witaj <span>{{ user.first_name }} {{ user.last_name }}</span>
+    <div class="dashboard-layout">
+        <aside class="dashboard-sidebar">
+            <div class="sidebar-brand">
+                Panel
             </div>
-            {% if user.is_authenticated %}
+            <nav class="sidebar-nav">
+                <div class="nav-item">Menu 1</div>
+                <div class="nav-item">Menu 2</div>
+                <div class="nav-item">Menu 3</div>
+            </nav>
+        </aside>
+
+        <div class="dashboard-main">
+            <header class="dashboard-header">
+                <div class="user-greeting">
+                    Witaj <span>{{ user.first_name }} {{ user.last_name }}</span>
+                </div>
+                {% if user.is_authenticated %}
                 <form method="post" action="{% url 'logout' %}">
                     {% csrf_token %}
                     <button type="submit" class="logout-button">Wyloguj</button>
-            </form>
-            {% endif %}
-        </header>
+                </form>
+                {% endif %}
+            </header>
 
-        <!-- CONTENT -->
-        <div class="dashboard-content">
-
-            {% if user.is_superuser %}
-            <!-- ADMIN VIEW -->
-            <div class="admin-view animate-fade-in">
-                <div class="admin-hero">
-                    <h2>Panel administratora</h2>
-                    <p>Możesz przejść do panelu administracyjnego Django.</p>
-
-                    <a href="/admin/">
-                        <button class="mega-button">Przejdź do panelu administratora</button>
-                    </a>
+            <div class="dashboard-content">
+                {% if user.is_superuser %}
+                <div class="admin-view animate-fade-in">
+                    <div class="admin-hero">
+                        <h2>Panel administratora</h2>
+                        <p>Możesz przejść do panelu administracyjnego Django.</p>
+                        <a href="/admin/">
+                            <button class="mega-button">Przejdź do panelu administratora</button>
+                        </a>
+                    </div>
                 </div>
-            </div>
-
-            {% else %}
-            <!-- DOCTOR VIEW -->
-            <div class="doctor-view animate-fade-in">
-
-                <div class="view-header">
-                    <div>
-                        <h2>Twoi pacjenci</h2>
-                        <p>Lista pacjentów przypisanych do Ciebie</p>
+                {% else %}
+                <div class="doctor-view animate-fade-in">
+                    <div class="view-header">
+                        <div>
+                            <h2>Twoi pacjenci</h2>
+                            <p>Lista pacjentów przypisanych do Ciebie</p>
+                        </div>
+                        <a href="{% url 'add_patient' %}">
+                            <button class="add-button">Dodaj pacjenta</button>
+                        </a>
                     </div>
 
-                    <a href="">
-                        <button class="add-button">Dodaj pacjenta</button>
-                    </a>
-                </div>
+                    <div class="search-toolbar" style="margin-bottom: 20px;">
+                        <form method="GET" action="{% url 'home' %}" style="display: flex; gap: 10px; max-width: 500px;">
+                            <input type="text" name="q" placeholder="Szukaj po nazwisku lub PESEL..." value="{{ search_query }}" class="search-input">
+                            <button type="submit" class="search-button">Szukaj</button>
+                            {% if search_query %}
+                            <a href="{% url 'home' %}" class="clear-search">Wyczyść</a>
+                            {% endif %}
+                        </form>
+                    </div>
 
-                <div class="table-container">
-                    <table class="patient-table">
-                        <thead>
-                            <tr>
-                                <th>Imię i nazwisko</th>
-                                <th>Data urodzenia</th>
-                                <th>Płeć</th>
-                                <th>Pesel</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for p in patients %}
-                            <tr>
-                                <td class = "mono">
-                                    <a href="{% url 'patient_detail' p.id %}">
-                                        {{p.first_name }} {{ p.last_name }}
-                                    </a>
-                                </td>
-                                <td>{{ p.date_of_birth }}</td>
-                                <td class="mono">{{ p.gender }}</td>
-                                <td>{{ p.pesel }}</td>
-                            </tr>
-                            {% empty %}
-                            <tr>
-                                <td colspan="4">Brak pacjentów</td>
-                            </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
-                </div>
+                    <div class="table-container">
+                        <table class="patient-table">
+                            <thead>
+                                <tr>
+                                    <th>Imię i nazwisko</th>
+                                    <th>Data urodzenia</th>
+                                    <th>Płeć</th>
+                                    <th>Pesel</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for p in patients %}
+                                <tr>
+                                    <td class="mono">
+                                        <a href="{% url 'patient_detail' p.id %}">
+                                            {{ p.first_name }} {{ p.last_name }}
+                                        </a>
+                                    </td>
+                                    <td>{{ p.date_of_birth }}</td>
+                                    <td class="mono">{{ p.gender }}</td>
+                                    <td>{{ p.pesel }}</td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="4">Brak pacjentów</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
 
+                    <div class="pagination-container">
+                        <span class="step-links">
+                            {% if patients.has_previous %}
+                            <a href="?page=1{% if search_query %}&q={{ search_query }}{% endif %}">&laquo; pierwsza</a>
+                            <a href="?page={{ patients.previous_page_number }}{% if search_query %}&q={{ search_query }}{% endif %}">poprzednia</a>
+                            {% endif %}
+
+                            <span class="current">
+                                Strona {{ patients.number }} z {{ patients.paginator.num_pages }}
+                            </span>
+
+                            {% if patients.has_next %}
+                            <a href="?page={{ patients.next_page_number }}{% if search_query %}&q={{ search_query }}{% endif %}">następna</a>
+                            <a href="?page={{ patients.paginator.num_pages }}{% if search_query %}&q={{ search_query }}{% endif %}">ostatnia &raquo;</a>
+                            {% endif %}
+                        </span>
+                    </div>
+                </div>
+                {% endif %}
             </div>
-            {% endif %}
-
         </div>
     </div>
-
-</div>
-
 </body>
 </html>

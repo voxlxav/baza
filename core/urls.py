@@ -13,6 +13,7 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
+from Demos.BackupSeek_streamheaders import parse_stream_header
 from django.contrib import admin
 from django.urls import path, include
 from django.contrib.auth import views as auth_views
@@ -24,4 +25,5 @@ urlpatterns = [
     path('logout/', auth_views.LogoutView.as_view(), name='logout'),
     path('home/', views.home, name='home'),
     path('patient/<int:pk>', views.patient_detail, name='patient_detail'),
+    path('add_patient/',views.add_patient,name='add_patient'),
 ]
