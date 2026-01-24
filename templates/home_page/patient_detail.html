@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <title>Karta Pacjenta</title>
+</head>
+<body>
+    <h1>Karta Pacjenta: {{ patient.first_name }} {{ patient.last_name }}</h1>
+    <p>PESEL: {{ patient.pesel }}</p>
+
+    <hr>
+    <a href="{% url 'home' %}">Wróć do listy pacjentów</a>
+
+</body>
+</html>

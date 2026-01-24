@@ -77,19 +77,23 @@
                     <table class="patient-table">
                         <thead>
                             <tr>
-                                <th>Imię</th>
-                                <th>Nazwisko</th>
+                                <th>Imię i nazwisko</th>
+                                <th>Data urodzenia</th>
                                 <th>Płeć</th>
-                                <th>Data wizyty</th>
+                                <th>Pesel</th>
                             </tr>
                         </thead>
                         <tbody>
                             {% for p in patients %}
                             <tr>
-                                <td>{{ p.first_name }}</td>
-                                <td>{{ p.last_name }}</td>
+                                <td class = "mono">
+                                    <a href="{% url 'patient_detail' p.id %}">
+                                        {{p.first_name }} {{ p.last_name }}
+                                    </a>
+                                </td>
+                                <td>{{ p.date_of_birth }}</td>
                                 <td class="mono">{{ p.gender }}</td>
-                                <td>{{ p.visit_date }}</td>
+                                <td>{{ p.pesel }}</td>
                             </tr>
                             {% empty %}
                             <tr>

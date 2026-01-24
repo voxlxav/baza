@@ -272,6 +272,21 @@ html, body {
     color: var(--text-secondary);
 }
 
+.patient-table td a,
+.patient-table td a:visited {
+    text-decoration: none;
+    color: var(--text-secondary);
+    font-weight: 600;
+    transition: color 0.2s ease;
+    display: inline-block;
+}
+
+/* Efekt najechania myszką (pozostaje bez zmian) */
+.patient-table td a:hover {
+    color: var(--accent-color);
+    text-decoration: underline;
+}
+
 .text-action {
     background: transparent;
     border: none;

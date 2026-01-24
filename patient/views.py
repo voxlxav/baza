@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.db.models import Q
 
@@ -32,3 +32,11 @@ def home(request):
   }
 
   return render(request, 'home_page/home.html', context)
+
+@login_required(login_url='login')
+def patient_detail(request, pk):
+  patient = get_object_or_404(Patient, pk=pk)
+  context = {
+    'patient': patient
+  }
+  return render(request,'home_page/patient_detail.html',context)
