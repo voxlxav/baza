@@ -8,117 +8,244 @@
     <link rel="stylesheet" href="{% static 'stylesheets/home.css' %}">
     <link rel="icon" type="image/png" href="{% static 'images/favicon.png' %}">
 </head>
+
 <body>
-    <div class="dashboard-layout">
-        <aside class="dashboard-sidebar">
-            <div class="sidebar-brand">
-                Panel
+<div class="dashboard-layout">
+
+    <!-- SIDEBAR -->
+    <aside class="dashboard-sidebar">
+
+        <div class="sidebar-brand-logo"> 
+            <img src="{% static 'images/logo.png' %}" class="sidebar-logo" alt="Logo">
+        </div>
+
+        <div class="sidebar-brand-text">
+            Panel
+        </div>
+
+        <nav class="sidebar-nav">
+            <div class="nav-item">Menu 1</div>
+            <div class="nav-item">Menu 2</div>
+            <div class="nav-item">Menu 3</div>
+        </nav>
+    </aside>
+
+    <!-- MAIN -->
+    <div class="dashboard-main">
+
+        <!-- HEADER -->
+        <header class="dashboard-header">
+            <div class="user-greeting">
+                Witaj <span>{{ user.first_name }} {{ user.last_name }}</span>
             </div>
-            <nav class="sidebar-nav">
-                <div class="nav-item">Menu 1</div>
-                <div class="nav-item">Menu 2</div>
-                <div class="nav-item">Menu 3</div>
-            </nav>
-        </aside>
 
-        <div class="dashboard-main">
-            <header class="dashboard-header">
-                <div class="user-greeting">
-                    Witaj <span>{{ user.first_name }} {{ user.last_name }}</span>
+            {% if user.is_authenticated %}
+            <form method="post" action="{% url 'logout' %}">
+                {% csrf_token %}
+                <button type="submit" class="logout-button">Wyloguj</button>
+            </form>
+            {% endif %}
+        </header>
+
+        <!-- CONTENT -->
+        <div class="dashboard-content">
+
+            {% if user.is_superuser %}
+
+            <div class="admin-view animate-fade-in">
+                <div class="admin-hero">
+                    <h2>Panel administratora</h2>
+                    <p>Możesz przejść do panelu administracyjnego Django.</p>
+                    <a href="/admin/">
+                        <button class="mega-button">Przejdź do panelu administratora</button>
+                    </a>
                 </div>
-                {% if user.is_authenticated %}
-                <form method="post" action="{% url 'logout' %}">
-                    {% csrf_token %}
-                    <button type="submit" class="logout-button">Wyloguj</button>
-                </form>
-                {% endif %}
-            </header>
+            </div>
 
-            <div class="dashboard-content">
-                {% if user.is_superuser %}
-                <div class="admin-view animate-fade-in">
-                    <div class="admin-hero">
-                        <h2>Panel administratora</h2>
-                        <p>Możesz przejść do panelu administracyjnego Django.</p>
-                        <a href="/admin/">
-                            <button class="mega-button">Przejdź do panelu administratora</button>
-                        </a>
+            {% else %}
+
+            <div class="doctor-view animate-fade-in">
+
+                <div class="view-header">
+                    <div>
+                        <h2>Twoi pacjenci</h2>
+                        <p>Lista pacjentów przypisanych do Ciebie</p>
                     </div>
+
+                    <!-- BUTTON OTWIERAJĄCY MODAL -->
+                    <button id="openModal" class="add-button">Dodaj pacjenta</button>
                 </div>
-                {% else %}
-                <div class="doctor-view animate-fade-in">
-                    <div class="view-header">
-                        <div>
-                            <h2>Twoi pacjenci</h2>
-                            <p>Lista pacjentów przypisanych do Ciebie</p>
-                        </div>
-                        <a href="{% url 'add_patient' %}">
-                            <button class="add-button">Dodaj pacjenta</button>
-                        </a>
-                    </div>
 
-                    <div class="search-toolbar" style="margin-bottom: 20px;">
-                        <form method="GET" action="{% url 'home' %}" style="display: flex; gap: 10px; max-width: 500px;">
-                            <input type="text" name="q" placeholder="Szukaj po nazwisku lub PESEL..." value="{{ search_query }}" class="search-input">
-                            <button type="submit" class="search-button">Szukaj</button>
-                            {% if search_query %}
-                            <a href="{% url 'home' %}" class="clear-search">Wyczyść</a>
-                            {% endif %}
-                        </form>
-                    </div>
+                <!-- SEARCH -->
+                <div class="search-toolbar" style="margin-bottom: 20px;">
+                    <form method="GET" action="{% url 'home' %}" style="display: flex; gap: 10px; max-width: 500px;">
+                        <input type="text" name="q" placeholder="Szukaj po nazwisku lub PESEL..." value="{{ search_query }}" class="search-input">
+                        <button type="submit" class="search-button">Szukaj</button>
+                        {% if search_query %}
+                        <a href="{% url 'home' %}" class="clear-search">Wyczyść</a>
+                        {% endif %}
+                    </form>
+                </div>
 
-                    <div class="table-container">
-                        <table class="patient-table">
-                            <thead>
-                                <tr>
-                                    <th>Imię i nazwisko</th>
-                                    <th>Data urodzenia</th>
-                                    <th>Płeć</th>
-                                    <th>Pesel</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {% for p in patients %}
-                                <tr>
-                                    <td class="mono">
-                                        <a href="{% url 'patient_detail' p.id %}">
-                                            {{ p.first_name }} {{ p.last_name }}
-                                        </a>
-                                    </td>
-                                    <td>{{ p.date_of_birth }}</td>
-                                    <td class="mono">{{ p.gender }}</td>
-                                    <td>{{ p.pesel }}</td>
-                                </tr>
-                                {% empty %}
-                                <tr>
-                                    <td colspan="4">Brak pacjentów</td>
-                                </tr>
-                                {% endfor %}
-                            </tbody>
-                        </table>
-                    </div>
+                <!-- TABLE -->
+                <div class="table-container">
+                    <table class="patient-table">
+                        <thead>
+                            <tr>
+                                <th>Imię i nazwisko</th>
+                                <th>Data urodzenia</th>
+                                <th>Płeć</th>
+                                <th>Pesel</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for p in patients %}
+                            <tr>
+                                <td class="mono">
+                                    <a href="{% url 'patient_detail' p.id %}">
+                                        {{ p.first_name }} {{ p.last_name }}
+                                    </a>
+                                </td>
+                                <td>{{ p.date_of_birth }}</td>
+                                <td class="mono">{{ p.gender }}</td>
+                                <td>{{ p.pesel }}</td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="4">Brak pacjentów</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
 
-                    <div class="pagination-container">
-                        <span class="step-links">
-                            {% if patients.has_previous %}
-                            <a href="?page=1{% if search_query %}&q={{ search_query }}{% endif %}">&laquo; pierwsza</a>
-                            <a href="?page={{ patients.previous_page_number }}{% if search_query %}&q={{ search_query }}{% endif %}">poprzednia</a>
-                            {% endif %}
+                <!-- PAGINATION -->
+                <div class="pagination-container">
+                    <span class="step-links">
+                        {% if patients.has_previous %}
+                        <a href="?page=1{% if search_query %}&q={{ search_query }}{% endif %}">&laquo; pierwsza</a>
+                        <a href="?page={{ patients.previous_page_number }}{% if search_query %}&q={{ search_query }}{% endif %}">poprzednia</a>
+                        {% endif %}
 
-                            <span class="current">
-                                Strona {{ patients.number }} z {{ patients.paginator.num_pages }}
-                            </span>
-
-                            {% if patients.has_next %}
-                            <a href="?page={{ patients.next_page_number }}{% if search_query %}&q={{ search_query }}{% endif %}">następna</a>
-                            <a href="?page={{ patients.paginator.num_pages }}{% if search_query %}&q={{ search_query }}{% endif %}">ostatnia &raquo;</a>
-                            {% endif %}
+                        <span class="current">
+                            Strona {{ patients.number }} z {{ patients.paginator.num_pages }}
                         </span>
-                    </div>
+
+                        {% if patients.has_next %}
+                        <a href="?page={{ patients.next_page_number }}{% if search_query %}&q={{ search_query }}{% endif %}">następna</a>
+                        <a href="?page={{ patients.paginator.num_pages }}{% if search_query %}&q={{ search_query }}{% endif %}">ostatnia &raquo;</a>
+                        {% endif %}
+                    </span>
                 </div>
-                {% endif %}
+
             </div>
+            {% endif %}
         </div>
     </div>
+</div>
+
+<!-- ========================= -->
+<!--        MODAL FORM         -->
+<!-- ========================= -->
+
+<div id="patientModal" class="modal-overlay" style="display: none;">
+    <div class="modal-content">
+
+        <div class="modal-header">
+            <h2>Nowy Pacjent</h2>
+            <button class="close-btn" id="closeModal">&times;</button>
+        </div>
+
+        <form method="post" action="{% url 'add_patient' %}" class="patient-form">
+            {% csrf_token %}
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Imię</label>
+                    <input type="text" name="first_name" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Nazwisko</label>
+                    <input type="text" name="last_name" required>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>PESEL</label>
+                <input type="text" name="pesel" required>
+            </div>
+
+            <div class="form-group">
+                <label>Data urodzenia</label>
+                <input type="date" name="date_of_birth" required>
+            </div>
+
+            <div class="form-group">
+                <label>Płeć</label>
+                <select name="gender" required>
+                    <option value="">Wybierz...</option>
+                    <option value="M">Mężczyzna</option>
+                    <option value="F">Kobieta</option>
+                    <option value="O">Inna</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Ulica</label>
+                <input type="text" name="address_street">
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Kod pocztowy</label>
+                    <input type="text" name="address_zip_code">
+                </div>
+
+                <div class="form-group">
+                    <label>Miasto</label>
+                    <input type="text" name="address_city">
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Telefon</label>
+                    <input type="tel" name="phone_number">
+                </div>
+
+                <div class="form-group">
+                    <label>E-mail</label>
+                    <input type="email" name="email">
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="cancel-btn" id="cancelModal">Anuluj</button>
+                <button type="submit" class="submit-btn">Zapisz w Bazie</button>
+            </div>
+        </form>
+
+    </div>
+</div>
+
+<!-- ========================= -->
+<!--         MODAL JS          -->
+<!-- ========================= -->
+
+<script>
+document.getElementById("openModal").addEventListener("click", () => {
+    document.getElementById("patientModal").style.display = "flex";
+});
+
+document.getElementById("closeModal").addEventListener("click", () => {
+    document.getElementById("patientModal").style.display = "none";
+});
+
+document.getElementById("cancelModal").addEventListener("click", () => {
+    document.getElementById("patientModal").style.display = "none";
+});
+</script>
+
 </body>
 </html>

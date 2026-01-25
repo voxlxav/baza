@@ -62,20 +62,17 @@ def patient_detail(request, pk):
 
 @login_required(login_url='login')
 def add_patient(request):
-  if request.method == 'POST':
-    form = PatientForm(request.POST)
-    if form.is_valid():
-      patient = form.save(commit=False)
+    if request.method == 'POST':
+        form = PatientForm(request.POST)
+        if form.is_valid():
+            patient = form.save(commit=False)
 
-      try:
-        patient.attending_doctor = request.user.doctor_profile
-      except Doctor.DoesNotExist:
-        pass
+            try:
+                patient.attending_doctor = request.user.doctor_profile
+            except Doctor.DoesNotExist:
+                pass
 
-      patient.save()
-
-      return redirect('home')
-  else:
-    form = PatientForm()
-
-  return render(request, 'home_page/add_patient.html', {'form': form})
+            patient.save()
+            return redirect('home')
+        return redirect('home')
+    return redirect('home')
