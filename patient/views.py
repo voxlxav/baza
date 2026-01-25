@@ -1,6 +1,7 @@
 from django.core.paginator import Paginator
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
+from django.contrib import messages
 from django.db.models import Q
 
 from .forms import PatientForm
@@ -69,10 +70,14 @@ def add_patient(request):
 
             try:
                 patient.attending_doctor = request.user.doctor_profile
+                patient.save()
             except Doctor.DoesNotExist:
-                pass
+                messages.error(request, "Błąd: Twoje konto nie jest powiązane z profilem lekarza.")
+        else:
+            for field, errors in form.errors.items():
+                for error in errors:
+                  messages.error(request, f"Błąd w polu {field}: {error}")
 
-            patient.save()
             return redirect('home')
-        return redirect('home')
+
     return redirect('home')
