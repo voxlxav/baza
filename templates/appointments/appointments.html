@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Zaplanowane wizyty</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'stylesheets/appointments.css' %}">
+     <link rel="icon" type="image/png" href="{% static 'images/favicon.png' %}">
+    <script src="https://kit.fontawesome.com/0a461084e7.js" crossorigin="anonymous"></script>
+</head>
+<body>
+    <div class="dashboard-layout">
+         <aside class="dashboard-sidebar">
+
+        <a href = "{% url 'home' %}" class="sidebar-brand-logo" style="display: block; text-decoration: none;">
+            <img src="{% static 'images/logo.png' %}" class="sidebar-logo" alt="Logo">
+        </a>
+
+        <div class="sidebar-brand-text">
+            Panel
+        </div>
+
+        <nav class="sidebar-nav">
+            <a href="{% url 'home' %}" class="nav-item" >
+                <i class="fa-solid fa-bed" style="color: #194db0;"></i>
+                Pacjenci
+            </a>
+            <a href="{% url 'appointments'  %}" class="nav-item active">
+                <i class="fa-solid fa-calendar-check" style="color: #d9d9d9;"></i>
+                Zaplanowane wizyty
+            </a>
+            <div class="nav-item">Menu 3</div>
+        </nav>
+    </aside>
+
+    <!-- MAIN -->
+    <div class="dashboard-main">
+
+        <!-- HEADER -->
+        <header class="dashboard-header">
+            <div class="user-greeting">
+                Witaj <span>{{ user.first_name }} {{ user.last_name }}</span>
+            </div>
+
+            {% if user.is_authenticated %}
+            <form method="post" action="{% url 'logout' %}">
+                {% csrf_token %}
+                <button type="submit" class="logout-button">Wyloguj</button>
+            </form>
+            {% endif %}
+        </header>
+    </div>
+</body>
+</html>

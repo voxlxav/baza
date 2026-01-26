@@ -6,7 +6,7 @@ from django.db.models import Q
 
 from .forms import PatientForm
 
-from patient.models import Patient, Doctor
+from patient.models import Patient, Doctor, Appointment
 
 
 @login_required(login_url='login')
@@ -81,3 +81,11 @@ def add_patient(request):
             return redirect('home')
 
     return redirect('home')
+
+@login_required(login_url='login')
+def appointments(request):
+  user = request.user
+  context = {
+    'user': user
+  }
+  return render(request,"appointments/appointments.html",context)

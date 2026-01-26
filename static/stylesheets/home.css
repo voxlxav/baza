@@ -74,6 +74,7 @@ html, body {
     cursor: pointer;
     transition: all 0.2s ease;
     font-weight: 500;
+    text-decoration: none;
 }
 
 .nav-item:hover {
@@ -185,8 +186,6 @@ html, body {
     transform: translateY(-1px);
 }
 
-/* --- WYSZUKIWARKA (SEARCH) --- */
-/* Ważne: Te style muszą być POZA sekcją @media */
 
 .search-toolbar {
     margin-bottom: 20px;
