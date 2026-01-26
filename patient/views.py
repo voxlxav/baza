@@ -8,6 +8,10 @@ from .forms import PatientForm
 
 from patient.models import Patient, Doctor, Appointment
 
+from django.shortcuts import render, get_object_or_404, redirect
+from .models import Patient
+from .forms import PatientForm
+
 
 @login_required(login_url='login')
 def home(request):
@@ -54,14 +58,6 @@ def home(request):
   return render(request, 'home_page/home.html', context)
 
 @login_required(login_url='login')
-def patient_detail(request, pk):
-  patient = get_object_or_404(Patient, pk=pk)
-  context = {
-    'patient': patient
-  }
-  return render(request,'home_page/patient_detail.html',context)
-
-@login_required(login_url='login')
 def add_patient(request):
     if request.method == 'POST':
         form = PatientForm(request.POST)
@@ -83,9 +79,40 @@ def add_patient(request):
     return redirect('home')
 
 @login_required(login_url='login')
+<<<<<<< Updated upstream
 def appointments(request):
   user = request.user
   context = {
     'user': user
   }
   return render(request,"appointments/appointments.html",context)
+=======
+def patient_detail(request, pk):
+    patient = get_object_or_404(Patient, pk=pk)
+
+    editing = request.GET.get("edit") == "1"
+
+    if request.method == "POST":
+        form = PatientForm(request.POST, instance=patient)
+        if form.is_valid():
+            form.save()
+            return redirect("patient_detail", pk=pk)
+    else:
+        form = PatientForm(instance=patient)
+
+    return render(request, "home_page/patient_detail.html", {
+        "patient": patient,
+        "form": form,
+        "editing": editing,
+    })
+
+@login_required(login_url='login')
+def delete_patient(request, pk):
+    patient = get_object_or_404(Patient, pk=pk)
+
+    if request.method == "POST":
+        patient.delete()
+        return redirect("home")
+
+    return redirect("patient_detail", pk=pk)
+>>>>>>> Stashed changes

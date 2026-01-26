@@ -14,16 +14,28 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path, include
+from django.urls import path
 from django.contrib.auth import views as auth_views
 from patient import views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+
     path('', auth_views.LoginView.as_view(template_name='registration/login.html'), name='login'),
     path('logout/', auth_views.LogoutView.as_view(), name='logout'),
+
     path('home/', views.home, name='home'),
+<<<<<<< Updated upstream
     path('patient/<int:pk>', views.patient_detail, name='patient_detail'),
     path('add_patient/',views.add_patient,name='add_patient'),
     path('appointments/', views.appointments, name='appointments'),
 ]
+=======
+
+    path('patient/<int:pk>/', views.patient_detail, name='patient_detail'),
+
+    path('patient/<int:pk>/delete/', views.delete_patient, name='delete_patient'),
+
+    path('add_patient/', views.add_patient, name='add_patient'),
+]
+>>>>>>> Stashed changes

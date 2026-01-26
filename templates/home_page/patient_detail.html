@@ -1,18 +1,301 @@
+{% load static %}
 
 <!DOCTYPE html>
 <html lang="pl">
 <head>
     <meta charset="UTF-8">
-    <title>Karta Pacjenta</title>
-    {%load static%}
-    <link rel="icon" type="image/png" href="{% static 'images/favicon.png' %}">
-</head>
-<body>
-    <h1>Karta Pacjenta: {{ patient.first_name }} {{ patient.last_name }}</h1>
-    <p>PESEL: {{ patient.pesel }}</p>
+    <title>Karta pacjenta</title>
 
-    <hr>
-    <a href="{% url 'home' %}">Wróć do listy pacjentów</a>
+    <link rel="stylesheet" href="{% static 'stylesheets/home.css' %}">
+    <link rel="stylesheet" href="{% static 'stylesheets/patient_detail.css' %}">
+</head>
+
+<body>
+
+<!-- ROZMYTE TŁO POPUPU -->
+<div class="modal-overlay" id="modalOverlay"></div>
+
+<!-- PASEK PRZYCISKÓW -->
+<div class="patient-actions">
+    <a href="{% url 'home' %}" class="btn-secondary">← Powrót</a>
+
+    {% if not editing %}
+        <a href="?edit=1" class="btn-primary">Edytuj dane</a>
+    {% endif %}
+
+    <form method="post" action="{% url 'delete_patient' patient.id %}" onsubmit="return confirm('Czy na pewno chcesz usunąć pacjenta?');">
+        {% csrf_token %}
+        <button type="submit" class="btn-danger">Usuń pacjenta</button>
+    </form>
+</div>
+
+<!-- OKNO POPUPU -->
+<div class="modal-window">
+    <div class="patient-card">
+
+        {% if editing %}
+
+        <!-- TRYB EDYCJI -->
+        <h2>Edytuj dane pacjenta</h2>
+
+        <form method="post">
+            {% csrf_token %}
+            {{ form.as_p }}
+
+            <button type="submit" class="btn-primary">Zapisz zmiany</button>
+            <a href="{% url 'patient_detail' patient.id %}" class="btn-secondary">Anuluj</a>
+        </form>
+
+        {% else %}
+
+        <!-- TRYB PODGLĄDU -->
+        <div class="patient-header">
+            <h1>{{ patient.first_name }} {{ patient.last_name }}</h1>
+
+            <p class="patient-meta">
+                {% if patient.pesel %}
+                    PESEL: {{ patient.pesel }}
+                {% else %}
+                    Data urodzenia: {{ patient.date_of_birth }}
+                {% endif %}
+                • {{ patient.gender }}
+            </p>
+
+            {% if patient.attending_doctor %}
+            <p class="doctor-info">
+                Lekarz prowadzący:
+                <strong>lek. {{ patient.attending_doctor.first_name }} {{ patient.attending_doctor.last_name }}</strong>
+                ({{ patient.attending_doctor.specialization }})
+            </p>
+            {% endif %}
+
+            <p class="doctor-info">
+                Lekarze konsultujący:
+                {% for d in patient.consulting_doctors.all %}
+                    {{ d.first_name }} {{ d.last_name }}{% if not forloop.last %}, {% endif %}
+                {% empty %}
+                    Brak
+                {% endfor %}
+            </p>
+        </div>
+
+        <!-- DANE OSOBOWE -->
+        <div class="patient-section">
+            <h2>Dane osobowe</h2>
+            <div class="section-grid">
+                <div><label>Imię</label><p>{{ patient.first_name }}</p></div>
+                <div><label>Nazwisko</label><p>{{ patient.last_name }}</p></div>
+                <div><label>Data urodzenia</label><p>{{ patient.date_of_birth }}</p></div>
+                <div><label>Płeć</label><p>{{ patient.gender }}</p></div>
+                <div><label>PESEL</label><p>{{ patient.pesel|default:"—" }}</p></div>
+            </div>
+        </div>
+
+        <!-- ADRES -->
+        <div class="patient-section">
+            <h2>Adres zamieszkania</h2>
+            <div class="section-grid">
+                <div><label>Ulica</label><p>{{ patient.address_street|default:"—" }}</p></div>
+                <div><label>Kod pocztowy</label><p>{{ patient.address_zip_code|default:"—" }}</p></div>
+                <div><label>Miasto</label><p>{{ patient.address_city|default:"—" }}</p></div>
+            </div>
+        </div>
+
+        <!-- KONTAKT -->
+        <div class="patient-section">
+            <h2>Dane kontaktowe</h2>
+            <div class="section-grid">
+                <div><label>Telefon</label><p>{{ patient.phone_number|default:"—" }}</p></div>
+                <div><label>Email</label><p>{{ patient.email|default:"—" }}</p></div>
+            </div>
+        </div>
+
+        <!-- DIAGNOZY -->
+        <div class="patient-section">
+            <h2>Historia chorób (Diagnozy)</h2>
+
+            {% if patient.diagnoses.all %}
+            <table class="patient-table">
+                <thead>
+                    <tr>
+                        <th>Kod ICD</th>
+                        <th>Rozpoznanie</th>
+                        <th>Data</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for d in patient.diagnoses.all %}
+                    <tr>
+                        <td>{{ d.icd_code|default:"—" }}</td>
+                        <td>{{ d.name }}</td>
+                        <td>{{ d.diagnosis_date }}</td>
+                        <td>{{ d.status }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+            <p>Brak diagnoz.</p>
+            {% endif %}
+        </div>
+
+        <!-- DOKUMENTY -->
+        <div class="patient-section">
+            <h2>Dokumentacja medyczna</h2>
+
+            {% if patient.medical_documents.all %}
+            <ul class="document-list">
+                {% for doc in patient.medical_documents.all %}
+                <li>
+                    <strong>{{ doc.name }}</strong> ({{ doc.upload_date|default:"brak daty" }})
+                    <br>
+                    <small>{{ doc.description|default:"—" }}</small>
+                </li>
+                {% endfor %}
+            </ul>
+            {% else %}
+            <p>Brak dokumentów.</p>
+            {% endif %}
+        </div>
+
+        <!-- WIZYTY -->
+        <div class="patient-section">
+            <h2>Wizyty</h2>
+
+            {% if patient.appointments.all %}
+            <table class="patient-table">
+                <thead>
+                    <tr>
+                        <th>Data</th>
+                        <th>Lekarz</th>
+                        <th>Rodzaj</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for a in patient.appointments.all %}
+                    <tr>
+                        <td>{{ a.date_time }}</td>
+                        <td>{{ a.doctor.first_name }} {{ a.doctor.last_name }}</td>
+                        <td>{{ a.appointment_type }}</td>
+                        <td>{{ a.status }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+            <p>Brak wizyt.</p>
+            {% endif %}
+        </div>
+
+        <!-- TERAPIE -->
+        <div class="patient-section">
+            <h2>Cykle terapii</h2>
+
+            {% if patient.therapy_cycles.all %}
+            <table class="patient-table">
+                <thead>
+                    <tr>
+                        <th>Rodzaj terapii</th>
+                        <th>Diagnoza</th>
+                        <th>Start</th>
+                        <th>Koniec</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for t in patient.therapy_cycles.all %}
+                    <tr>
+                        <td>{{ t.protocol_name }}</td>
+                        <td>{{ t.diagnosis.name|default:"—" }}</td>
+                        <td>{{ t.start_date }}</td>
+                        <td>{{ t.end_date|default:"—" }}</td>
+                        <td>{{ t.status }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+            <p>Brak terapii.</p>
+            {% endif %}
+        </div>
+
+        <!-- ODPOWIEDŹ NA LECZENIE -->
+        <div class="patient-section">
+            <h2>Odpowiedź na leczenie (RECIST)</h2>
+
+            {% for cycle in patient.therapy_cycles.all %}
+                {% for r in cycle.response_ci.all %}
+                <div class="response-item">
+                    <strong>{{ r.assessment_date }}</strong> — {{ r.recist_result }}
+                    <br>
+                    <small>{{ r.notes|default:"—" }}</small>
+                </div>
+                {% endfor %}
+            {% empty %}
+            <p>Brak ocen reakcji.</p>
+            {% endfor %}
+        </div>
+
+        <!-- ZDARZENIA NIEPOŻĄDANE -->
+        <div class="patient-section">
+            <h2>Zdarzenia niepożądane</h2>
+
+            {% for cycle in patient.therapy_cycles.all %}
+                {% for e in cycle.adverse_events.all %}
+                <div class="event-item">
+                    <strong>{{ e.event_date }}</strong> — {{ e.severity }}
+                    <br>
+                    <small>{{ e.description }}</small>
+                </div>
+                {% endfor %}
+            {% empty %}
+            <p>Brak zdarzeń niepożądanych.</p>
+            {% endfor %}
+        </div>
+
+        <!-- MUTACJE -->
+        <div class="patient-section">
+            <h2>Mutacje genetyczne</h2>
+
+            {% if patient.mutations.all %}
+            <table class="patient-table">
+                <thead>
+                    <tr>
+                        <th>Gen</th>
+                        <th>Typ mutacji</th>
+                        <th>VAF</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for m in patient.mutations.all %}
+                    <tr>
+                        <td>{{ m.gene }}</td>
+                        <td>{{ m.mutation_type }}</td>
+                        <td>{{ m.vaf }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+            <p>Brak mutacji.</p>
+            {% endif %}
+        </div>
+
+        {% endif %}
+    </div>
+</div>
+
+<!-- ZAMYKANIE POPUPU KLIKNIĘCIEM W TŁO -->
+<script>
+document.getElementById("modalOverlay").addEventListener("click", function () {
+    window.location.href = "{% url 'home' %}";
+});
+</script>
 
 </body>
 </html>
+
+
+
