@@ -36,7 +36,7 @@
         {% if editing %}
 
         <!-- TRYB EDYCJI -->
-        <h2>Edytuj dane pacjenta</h2>
+        <h2>Edytuj dane kontaktowe pacjenta</h2>
 
         <form method="post">
             {% csrf_token %}
@@ -287,7 +287,6 @@
     </div>
 </div>
 
-<!-- ZAMYKANIE POPUPU KLIKNIĘCIEM W TŁO -->
 <script>
 document.getElementById("modalOverlay").addEventListener("click", function () {
     window.location.href = "{% url 'home' %}";
